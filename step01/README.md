@@ -5,4 +5,5 @@ In this step:
  - &check; create a fourier transform of this image
  - &check; generate a transform mask (automated through the *imgaug* package)
  - &check; apply mask to image, thus creating a convoluted image
- - deconvolve the image with a simple scheme, Wiener deconvolution
+ - &check; extract the mask by dividing the fourier transforms
+ - deconvolve the image with a simple scheme (Wiener deconvolution)
