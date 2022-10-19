@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # make the plots more comprehensive
-fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(9, 6))
+fig, ax = plt.subplots(1, 2, figsize=(9, 6))
 
 # import and show image
 f = cv.imread('./img/alphabet/a.png', 0)
