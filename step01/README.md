@@ -7,3 +7,4 @@ In this step:
  - &check; apply mask to image, thus creating a convoluted image
  - &check; extract the mask by dividing the fourier transforms
  - &check; deconvolve the image with a simple scheme (Wiener deconvolution)
+ - &check; deconvolve the image with a slightly more complex scheme (RL deconvolution)

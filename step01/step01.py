@@ -7,7 +7,7 @@ from skimage import color, data, restoration
 from scipy.signal import convolve2d as conv2
 
 # make the plots more comprehensive
-fig, ax = plt.subplots(2, 5, figsize=(18, 7))
+fig, ax = plt.subplots(2, 7, figsize=(24, 7))
 
 # import and show image
 f = cv.imread('./img/alphabet/a.png', 0)
@@ -56,7 +56,7 @@ ax[0,3].set_title("distorted image (b)")
     # apply the wiener deconvolution to (b) with the middle 5x5 kernel from the deduced psf (h)
 deconvolved = restoration.wiener(b, psf, 1100, clip=False)
 ax[1,3].imshow(deconvolved, cmap='gray')
-ax[1,3].set_title("deconvolved (b)")
+ax[1,3].set_title("Wiener (b)")
 
     # convolute the source/clean image with this mask, and show in its subplot
 image = conv2(f, psf, 'same')
@@ -65,7 +65,24 @@ ax[0,4].set_title("convolved (clean)")
     # deconvolve with the wiener module of skimage
 deconvolved = restoration.wiener(image, psf, 1100, clip=False)
 ax[1,4].imshow(deconvolved, cmap='gray')
-ax[1,4].set_title("deconvolved (clean)")
+ax[1,4].set_title("Wiener (clean)")
+
+# Richardson-Lucy deconvolution
+    # we first show the same custom convoluted image
+ax[0,5].imshow(b, cmap='gray')
+ax[0,5].set_title("distorted image (b)")
+    # apply the richardson_lucy deconvolution to (b) with same kernel as above
+deconvolved = restoration.richardson_lucy(b, psf, num_iter=100, clip=True)
+ax[1,5].imshow(deconvolved, cmap='gray')
+ax[1,5].set_title("RL (b)")
+
+    # convolute the source/clean image with this mask, and show in its subplot
+ax[0,6].imshow(image, cmap='gray')
+ax[0,6].set_title("convolved (clean)")
+    # deconvolve with the richardson_lucy module of skimage
+deconvolved = restoration.richardson_lucy(image, psf, num_iter=2500, clip=True)
+ax[1,6].imshow(deconvolved, cmap='gray')
+ax[1,6].set_title("RL (clean)")
 
 # show the plots
 plt.show()
