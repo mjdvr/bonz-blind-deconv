@@ -5,7 +5,7 @@ from skimage import color, data, restoration
 from scipy.signal import convolve2d as conv2
 
 # make the plots more comprehensive
-fig, ax = plt.subplots(1, 5, figsize=(10, 7))
+fig, ax = plt.subplots(2, 10, figsize=(10, 7))
 
 def matlab_style_gauss2D(shape=(5,5),sigma=1):
     # source: https://stackoverflow.com/a/17201686
@@ -22,24 +22,46 @@ def matlab_style_gauss2D(shape=(5,5),sigma=1):
         h /= sumh
     return h
 
+def normalize_complex_arr(a):
+    a_oo = a - a.real.min() - 1j*a.imag.min() # origin offsetted
+    return a_oo/np.abs(a_oo).max()
+
 def conv_prod(a, b):
-    # this function takes two arguments: a and b, and returns the convolution product of the two
+    """ this function takes two arguments: a and b, and returns the convolution product of the two """
     return np.fft.ifft2(np.fft.fft2(a)*np.fft.fft2(b))
 
 def f_loop(f, g, c, nr_iter):
-    # this function takes an initial f, g and c, and returns the new f after 'nr_iter RL iterations
+    """ this function takes an initial f, g and c, and returns the new f after 'nr_iter' RL iterations """
+    if g.shape != (100,100):
+        # reshape and center the psf to match the size of the image to make convolution possible
+        x_pad_affix = int(np.floor((100-g.shape[0])/2))
+        x_pad_suffix = int(100-g.shape[0]-x_pad_affix)
+        y_pad_affix = int(np.floor((100-g.shape[1])/2))
+        y_pad_suffix = int(100-g.shape[1]-y_pad_affix)
+        g = np.pad(g, ((x_pad_affix, x_pad_suffix),(y_pad_affix, y_pad_suffix)), 'constant')
+
     for i in range(nr_iter):
         f = conv_prod(c/conv_prod(f,g),np.flip(g))*f
-        ax[i].imshow(f.real, cmap = 'gray')
-    plt.show()
+        f = normalize_complex_arr(f)
+        ax[0,i].imshow(f.real, cmap = 'gray')
+    #plt.show()
     return f.real
 
 def g_loop(f, g, c, nr_iter):
-    # this function takes an initial f, g and c, and returns the new g after 'nr_iter' RL iterations
+    """ this function takes an initial f, g and c, and returns the new g after 'nr_iter' RL iterations """
+    if g.shape != (100,100):
+        # reshape and center the psf to match the size of the image to make convolution possible
+        x_pad_affix = int(np.floor((100-g.shape[0])/2))
+        x_pad_suffix = int(100-g.shape[0]-x_pad_affix)
+        y_pad_affix = int(np.floor((100-g.shape[1])/2))
+        y_pad_suffix = int(100-g.shape[1]-y_pad_affix)
+        g = np.pad(g, ((x_pad_affix, x_pad_suffix),(y_pad_affix, y_pad_suffix)), 'constant')
+
     for i in range(nr_iter):
         g = conv_prod(c/conv_prod(g,f),np.flip(f))*g
-        ax[i].imshow(g.real, cmap = 'gray')
-    plt.show()
+        g = normalize_complex_arr(g)
+        ax[1,i].imshow(g.real, cmap = 'gray')
+    #plt.show()
     return g.real
 
 def RL_decon(init_guess=1, nr_iter=5):
@@ -47,32 +69,12 @@ def RL_decon(init_guess=1, nr_iter=5):
     return a
 
 # import and show image
-f = cv.imread('./img/alphabet/q.png', 0)
-psf = matlab_style_gauss2D(shape=(100,100), sigma=1)
+f = cv.imread('./img/alphabet/b.png', 0)
+psf = matlab_style_gauss2D(shape=(5,5), sigma=1)
 image = conv2(f, psf, 'same')
 
-""" ax[0,0].imshow(f, cmap = 'gray')
-ax[0,0].set_title("source image")
-
-# convolute the source/clean image with this mask, and show in its subplot
-ax[1,0].imshow(image, cmap='gray')
-ax[1,0].set_title("convolved")
-
-# deconvolve with the richardson_lucy module of skimage, using a different psf
-psf = matlab_style_gauss2D(sigma=1)
-deconvolved = restoration.richardson_lucy(image, psf, num_iter=1000, clip=True)
-ax[0,1].imshow(deconvolved, cmap='gray')
-ax[0,1].set_title("RL 1000")
-
-# deconvolve with the richardson_lucy module of skimage
-deconvolved = restoration.richardson_lucy(image, psf, num_iter=2500, clip=True)
-ax[1,1].imshow(deconvolved, cmap='gray')
-ax[1,1].set_title("RL 2500")
-
-# show the plots
-plt.show() """
-
-psf = matlab_style_gauss2D(shape=(100,100), sigma=5)
-#psf = np.ones((100, 100)) / 100
-print(f_loop(f,psf,image,5))
-#print(g_loop(f,psf,image,5)[48:53,48:53])
+psf = matlab_style_gauss2D(shape=(75,5), sigma=10)
+#psf = np.ones((100, 100)) / 25
+f_loop(image,psf,image,10)
+g_loop(image,psf,image,10)
+plt.show()
