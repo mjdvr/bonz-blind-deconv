@@ -92,6 +92,7 @@ def RL_decon(image, psf, nr_iter=10, show=1):
     for x in range(len(interval)):
         iter_list.append(interval[x][-1])
 
+    # source: https://stackoverflow.com/a/35259180
     latent_est = image
     psf_hat = np.flip(psf)
     for i in range(nr_iter):
