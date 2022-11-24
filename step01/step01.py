@@ -10,7 +10,7 @@ from scipy.signal import convolve2d as conv2
 fig, ax = plt.subplots(2, 7, figsize=(24, 7))
 
 # import and show image
-f = cv.imread('./img/alphabet/a.png', 0)
+f = cv.imread('./img/standards/cameraman.tif', 0)
 ax[0,0].imshow(f, cmap = 'gray')
 ax[0,0].set_title("source image (f)")
 
@@ -72,7 +72,7 @@ ax[1,4].set_title("Wiener (clean)")
 ax[0,5].imshow(b, cmap='gray')
 ax[0,5].set_title("distorted image (b)")
     # apply the richardson_lucy deconvolution to (b) with same kernel as above
-deconvolved = restoration.richardson_lucy(b, psf, num_iter=100, clip=True)
+deconvolved = restoration.richardson_lucy(b, psf, num_iter=100, clip=False)
 ax[1,5].imshow(deconvolved, cmap='gray')
 ax[1,5].set_title("RL (b)")
 
@@ -80,7 +80,7 @@ ax[1,5].set_title("RL (b)")
 ax[0,6].imshow(image, cmap='gray')
 ax[0,6].set_title("convolved (clean)")
     # deconvolve with the richardson_lucy module of skimage
-deconvolved = restoration.richardson_lucy(image, psf, num_iter=2500, clip=True)
+deconvolved = restoration.richardson_lucy(image, psf, num_iter=2500, clip=False)
 ax[1,6].imshow(deconvolved, cmap='gray')
 ax[1,6].set_title("RL (clean)")
 

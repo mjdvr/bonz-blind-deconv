@@ -44,10 +44,6 @@ def loop(nr_iter=3):
 
 def f_loop(f, g, c, nr_iter):
     """ this function takes an initial f, g and c, and returns the new f after 'nr_iter' RL iterations """
-    if g.shape != f.shape:
-        # reshape and center the psf to match the size of the image to make convolution possible
-        g = g_reshape(g, f.shape)
-
     for i in range(nr_iter):
         print(i, f.shape)
         f = fftc(c/fftc(f,g,'same'),np.flip(g),'same')*f
@@ -61,4 +57,6 @@ f = cv.imread('./img/alphabet/a.png', 0)
 psf = matlab_style_gauss2D(shape=(15,15), sigma=1)
 image = conv2(f, psf, 'same')
 
-f_loop(image,psf,image,10)
+
+psf = matlab_style_gauss2D(shape=(45,45), sigma=2)
+f_loop(image,psf,image,100)
