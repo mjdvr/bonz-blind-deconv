@@ -32,7 +32,6 @@ def g_reshape(g, goal):
     g = np.pad(g, ((x_pad_affix, x_pad_suffix),(y_pad_affix, y_pad_suffix)), 'constant')
     return g
 
-
 def normalize_complex_arr(a):
     # source: https://stackoverflow.com/a/41576956
     a_oo = a - a.real.min() - 1j*a.imag.min() # origin offsetted
